@@ -67,11 +67,11 @@ resume-formatter/
 
 ## Dependencies
 
-- streamlit>=1.31.0
-- google-generativeai>=0.3.2
-- python-docx>=1.1.0
-- typing>=3.7.4.3
-- pdf2docx>=0.5.6
+streamlit==1.32.0
+google-generativeai==0.3.2
+python-docx==1.1.0
+pdfminer.six==20231228
+python-dotenv==1.0.1 
 
 ## Known Limitations
 
