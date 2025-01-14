@@ -26,8 +26,8 @@ A Python-based tool that automatically formats Word document and PDF resumes to 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/kakachia777/resume-formatter.git
-cd resume-formatter
+git clone https://github.com/kakachia777/resume_formatter.git
+cd resume_formatter
 ```
 
 2. Create and activate a virtual environment (recommended):
