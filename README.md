@@ -26,8 +26,8 @@ A Python-based tool that automatically formats Word document and PDF resumes to 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/kakachia777/resume_formatter.git
-cd resume_formatter
+git clone https://github.com/kakachia777/resume-formatter.git
+cd resume-formatter
 ```
 
 2. Create and activate a virtual environment (recommended):
@@ -47,7 +47,7 @@ pip install -r requirements.txt
 
 1. Start the Streamlit app:
 ```bash
-streamlit run resume_formatter.py
+streamlit resume_formatter.py
 ```
 
 2. Access the interface:
@@ -79,3 +79,7 @@ resume-formatter/
 - May require manual adjustment for complex layouts
 - Tables and images may need manual formatting
 - PDF conversion may not preserve all formatting perfectly
+
+## Required Files
+
+- `optomi_logo.png` - Place this in the root directory for the header image
