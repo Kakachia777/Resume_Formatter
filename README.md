@@ -31,7 +31,7 @@ A simple tool that formats your resume to match company standards with just one 
    - Open Terminal
    - Copy and paste these commands one by one:
      ```
-     cd Downloads/resume_formatter
+     cd resume_formatter
      source venv/bin/activate
      streamlit run resume_formatter.py
      ```
