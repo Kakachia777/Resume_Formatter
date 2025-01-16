@@ -100,11 +100,12 @@ Output only the JSON object with all available information from the resume. No o
             raise
 
     def add_header_image(self):
-        header_paragraph = self.output_doc.add_paragraph()
+        section = self.output_doc.sections[0]
+        header = section.header
+        header_paragraph = header.paragraphs[0]
         header_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         run = header_paragraph.add_run()
-        run.add_picture('optomi_logo.png', width=Inches(4))
-        header_paragraph.space_after = Pt(20)
+        run.add_picture('optomi_logo.png', width=Inches(3.2))
 
     def format_name(self, name: str):
         para = self.output_doc.add_paragraph()
@@ -116,29 +117,21 @@ Output only the JSON object with all available information from the resume. No o
         para.space_after = Pt(1.67)
 
     def format_section_header(self, text: str):
-        # Add space before section header
-        para = self.output_doc.add_paragraph()
-        para.space_before = Pt(1.67)
-        para.space_after = Pt(0)
-
         para = self.output_doc.add_paragraph()
         para.alignment = WD_ALIGN_PARAGRAPH.CENTER
         run = para.add_run(text.upper())
         run.font.bold = True
         run.font.size = Pt(12)
-        para.space_before = Pt(0)
-        para.space_after = Pt(0)
-
-        # Add horizontal line after section header
-        line_para = self.output_doc.add_paragraph()
+        para.paragraph_format.space_before = Pt(10)
+        para.paragraph_format.space_after = Pt(10)
+        
+        # Add border to the same paragraph
         pBdr = OxmlElement('w:pBdr')
         bottom = OxmlElement('w:bottom')
         bottom.set(qn('w:val'), 'single')
-        bottom.set(qn('w:sz'), '6')
+        bottom.set(qn('w:sz'), '12')
         pBdr.append(bottom)
-        line_para._element.get_or_add_pPr().append(pBdr)
-        line_para.space_before = Pt(0)
-        line_para.space_after = Pt(0.67)
+        para._element.get_or_add_pPr().append(pBdr)
 
     def format_education(self, education: dict):
         self.format_section_header("EDUCATION")
@@ -223,8 +216,8 @@ Output only the JSON object with all available information from the resume. No o
             
             for bullet in job['bullets']:
                 bullet_para = self.output_doc.add_paragraph()
-                bullet_para.paragraph_format.left_indent = Inches(0.25)
-                bullet_para.paragraph_format.first_line_indent = Inches(-0.25)
+                bullet_para.paragraph_format.left_indent = Inches(0.15)
+                bullet_para.paragraph_format.first_line_indent = Inches(-0.15)
                 bullet_run = bullet_para.add_run(f"• {bullet}")
                 bullet_run.font.size = Pt(11)
                 bullet_para.space_before = Pt(0)
