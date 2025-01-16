@@ -1,85 +1,61 @@
 # Resume Formatter
 
-A Python-based tool that automatically formats Word document and PDF resumes to a standardized company template using Streamlit and python-docx.
+A simple tool that formats your resume to match company standards with just one click!
 
-## Features
+## First Time Setup (Mac Users)
 
-- Web interface for easy resume uploading and formatting
-- Supports both PDF and DOCX file formats
-- Standardized formatting:
-  - Cambria font throughout
-  - Name: 14pt bold, centered at top
-  - Section headers: 12pt bold, underlined
-  - Body text: 11pt normal
-  - Skills section: Two-column layout
-  - Dates: Right-aligned
-  - Margins: Narrow (0.5" all sides)
-- Preserves original content while applying consistent styling
-- Exports formatted document with "_formatted" suffix
+1. **Install Python**
+   - Visit [Python's Download Page](https://www.python.org/downloads/macos/)
+   - Download the latest version
+   - Double click the downloaded file
+   - Follow the installation wizard
 
-## Prerequisites
+2. **Get the Resume Formatter**
+   - Open Terminal
+     * Click the magnifying glass (🔍) in top-right corner of your screen
+     * Type "Terminal"
+     * Click the Terminal app
+   - Copy and paste these commands one by one:
+     ```
+     cd Downloads
+     git clone https://github.com/kakachia777/resume_formatter.git
+     cd resume_formatter
+     python -m venv venv
+     source venv/bin/activate
+     pip install -r requirements.txt
+     ```
 
-- Python 3.8+
-- pip (Python package installer)
+## How to Use (Every Time)
 
-## Installation
+1. **Start the Program**
+   - Open Terminal
+   - Copy and paste these commands one by one:
+     ```
+     cd Downloads/resume_formatter
+     source venv/bin/activate
+     streamlit run resume_formatter.py
+     ```
+   - A webpage will open automatically in your browser
 
-1. Clone the repository:
-```bash
-git clone https://github.com/kakachia777/resume_formatter.git
-cd resume_formatter
-```
+2. **Format Your Resume**
+   - Click "Browse files" 
+   - Select your resume (Word or PDF)
+   - Wait a few seconds
+   - Click "Download Formatted Resume" when it appears
+   - Find your formatted resume in your Downloads folder
 
-2. Create and activate a virtual environment (recommended):
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+## What You'll Get
+- Your resume formatted with:
+  * Company logo at the top
+  * Professional font and spacing
+  * Organized sections
+  * Clean, consistent look
 
-3. Install required packages:
-```bash
-pip install -r requirements.txt
-```
+## Need Help?
+If something's not working:
+1. Close Terminal
+2. Close your browser
+3. Start fresh with the "How to Use" steps
+4. Still stuck? Contact [support contact]
 
-## Usage
-
-### Web Interface (Recommended)
-
-1. Start the Streamlit app:
-```bash
-streamlit resume_formatter.py
-```
-
-2. Access the interface:
-   - Open the URL shown in your terminal (typically http://localhost:8501)
-   - Upload your resume (PDF or DOCX)
-   - Click "Format Resume" to process
-   - Download the formatted version when complete
-
-## File Structure
-
-```
-resume-formatter/
-├── resume_formatter.py # Main application file with Streamlit interface
-├── requirements.txt   # Project dependencies
-└── README.md         # This file
-```
-
-## Dependencies
-
-- streamlit==1.32.0
-- google-generativeai==0.3.2
-- python-docx==1.1.0
-- pdfminer.six==20231228
-- python-dotenv==1.0.1 
-
-## Known Limitations
-
-- Output is always in DOCX format, even for PDF inputs
-- May require manual adjustment for complex layouts
-- Tables and images may need manual formatting
-- PDF conversion may not preserve all formatting perfectly
-
-## Required Files
-
-- `optomi_logo.png` - Place this in the root directory for the header image
+Note: Make sure you have `optomi_logo.png` in the same folder as the program for the company logo to appear.
