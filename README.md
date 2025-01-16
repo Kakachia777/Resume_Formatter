@@ -56,6 +56,6 @@ If something's not working:
 1. Close Terminal
 2. Close your browser
 3. Start fresh with the "How to Use" steps
-4. Still stuck? Contact [support contact]
+4. Still stuck? Contact me :)
 
 Note: Make sure you have `optomi_logo.png` in the same folder as the program for the company logo to appear.
