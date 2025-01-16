@@ -17,8 +17,15 @@ import re
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Gemini API setup
-genai.configure(api_key=os.getenv('AIzaSyDdXpU3bn57KJEbA58rqjdK5yHccpOEbWs'))
+# Remove or comment out the direct API key
+# GEMINI_API_KEY = 'AIzaSyDdXpU3bn57KJEbA58rqjdK5yHccpOEbWs'
+
+def get_gemini_api_key():
+    """Get Gemini API key from environment or use default for development"""
+    return os.getenv('GEMINI_API_KEY', 'AIzaSyDdXpU3bn57KJEbA58rqjdK5yHccpOEbWs')
+
+# Gemini API setup with direct API key
+genai.configure(api_key=get_gemini_api_key())
 model = genai.GenerativeModel('gemini-2.0-flash-exp')
 
 class ResumeProcessor:
