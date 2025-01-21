@@ -45,10 +45,12 @@ Instructions:
 3. Include ALL technical skills mentioned anywhere in the resume
 4. Capture complete work experience details including dates, titles, and bullet points
 5. Do not leave fields empty - use available information from the entire text
+6. Generate a concise professional summary based on the resume content
 
 Required JSON structure:
 {{
     "name": "Full Name",
+    "professional_summary": "Professional summary of the individual.",
     "education": {{
         "university": "University Name",
         "degree": "Degree(s) Earned"
@@ -89,6 +91,10 @@ Output only the JSON object with all available information from the resume. No o
             if not content.get('name') or not content.get('education') or not content.get('experience'):
                 raise ValueError("Missing required fields in parsed content")
             
+            # Generate professional_summary if missing
+            if not content.get('professional_summary'):
+                content['professional_summary'] = self.generate_professional_summary(content)
+            
             return content
             
         except json.JSONDecodeError as e:
@@ -99,13 +105,40 @@ Output only the JSON object with all available information from the resume. No o
             logger.error(f"Error in content extraction: {str(e)}")
             raise
 
+    def generate_professional_summary(self, content: dict) -> str:
+        """
+        Generates a professional summary based on the extracted resume content.
+        """
+        prompt = f"""Based on the following resume information, generate a concise professional summary.
+
+Name: {content.get('name')}
+Education: {content.get('education')}
+Technical Skills: {content.get('technical_skills')}
+Experience: {content.get('experience')}
+
+Professional Summary:"""
+        
+        try:
+            response = model.generate_content(prompt)
+            if not response or not response.text:
+                raise ValueError("Empty response when generating professional summary")
+                
+            summary = response.text.strip()
+            logger.info(f"Generated Professional Summary: {summary}")
+            
+            return summary
+            
+        except Exception as e:
+            logger.error(f"Error generating professional summary: {str(e)}")
+            return "Professional summary not available."
+
     def add_header_image(self):
         section = self.output_doc.sections[0]
         header = section.header
         header_paragraph = header.paragraphs[0]
         header_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         run = header_paragraph.add_run()
-        run.add_picture('optomi_logo.png', width=Inches(3.2))
+        run.add_picture('optomi_logo.png', width=Inches(2.434))  # Increased size by 2x
 
     def format_name(self, name: str):
         para = self.output_doc.add_paragraph()
@@ -154,53 +187,31 @@ Output only the JSON object with all available information from the resume. No o
     def format_technical_skills(self, skills: dict):
         self.format_section_header("TECHNICAL SKILLS")
         
-        # Create two-column layout for skills with minimal spacing
-        table = self.output_doc.add_table(rows=1, cols=2)
-        table.autofit = True
-        table.allow_autofit = True
-        table.style = 'Table Grid'
-        table.style.paragraph_format.space_before = Pt(0)
-        table.style.paragraph_format.space_after = Pt(0)
-        table.style.paragraph_format.line_spacing = 1.0
-        left_cell, right_cell = table.rows[0].cells
-        
-        # Split skills into two columns dynamically based on categories
-        skills_items = list(skills.items())
-        mid_point = len(skills_items) // 2
-        
-        # Left column
-        for category, items in skills_items[:mid_point]:
+        for category, items in skills.items():
             if items:
-                p = left_cell.add_paragraph()
-                category_run = p.add_run(f"• {category}: ")
-                category_run.font.bold = True
-                category_run.font.size = Pt(11)
-                skills_run = p.add_run(', '.join(items))
-                skills_run.font.size = Pt(11)
-        
-        # Right column
-        for category, items in skills_items[mid_point:]:
-            if items:
-                p = right_cell.add_paragraph()
-                category_run = p.add_run(f"• {category}: ")
-                category_run.font.bold = True
-                category_run.font.size = Pt(11)
-                skills_run = p.add_run(', '.join(items))
-                skills_run.font.size = Pt(11)
+                para = self.output_doc.add_paragraph()
+                run = para.add_run(f"• {category}: ")
+                run.font.bold = True
+                run.font.size = Pt(11)
+                run = para.add_run(', '.join(items))
+                run.font.size = Pt(11)
+                para.paragraph_format.left_indent = Inches(0.25)
+                para.paragraph_format.space_before = Pt(0)
+                para.paragraph_format.space_after = Pt(0.67)
 
     def format_experience(self, experience: list):
         self.format_section_header("PROFESSIONAL EXPERIENCE")
         
         for job in experience:
             comp_para = self.output_doc.add_paragraph()
-            comp_para.paragraph_format.tab_stops.add_tab_stop(Inches(6.5), WD_TAB_ALIGNMENT.RIGHT)
+            comp_para.paragraph_format.tab_stops.add_tab_stop(Inches(7.0), WD_TAB_ALIGNMENT.RIGHT)  # Moved dates slightly to the right
             
             comp_run = comp_para.add_run(job['company'])
             comp_run.font.bold = True
             comp_run.font.size = Pt(11)
             
             comp_para.add_run('\t')
-            date_run = comp_para.add_run(job['dates'])
+            date_run = comp_para.add_run(abbreviate_date(job['dates']))  # Abbreviated month names
             date_run.font.bold = True
             date_run.font.size = Pt(11)
             comp_para.space_before = Pt(0)
@@ -216,8 +227,8 @@ Output only the JSON object with all available information from the resume. No o
             
             for bullet in job['bullets']:
                 bullet_para = self.output_doc.add_paragraph()
-                bullet_para.paragraph_format.left_indent = Inches(0.15)
-                bullet_para.paragraph_format.first_line_indent = Inches(-0.15)
+                bullet_para.paragraph_format.left_indent = Inches(0.5)  # Unified indent
+                bullet_para.paragraph_format.first_line_indent = Inches(0)  # Removed negative indent
                 bullet_run = bullet_para.add_run(f"• {bullet}")
                 bullet_run.font.size = Pt(11)
                 bullet_para.space_before = Pt(0)
@@ -249,9 +260,19 @@ Output only the JSON object with all available information from the resume. No o
         self.set_margins()
         self.add_header_image()
         self.format_name(content['name'])
+        self.format_section_header("PROFESSIONAL SUMMARY")
+        self.format_professional_summary(content['professional_summary'])
         self.format_education(content['education'])
         self.format_technical_skills(content['technical_skills'])
         self.format_experience(content['experience'])
+
+    def format_professional_summary(self, summary: str):
+        para = self.output_doc.add_paragraph()
+        para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        run = para.add_run(summary)
+        run.font.size = Pt(12)
+        para.paragraph_format.space_before = Pt(6)
+        para.paragraph_format.space_after = Pt(12)
 
 def sanitize_text(text):
     """
@@ -313,7 +334,7 @@ def process_resume(uploaded_file):
         return None, f"Error: {str(e)}"
 
 def create_streamlit_interface():
-    st.image('optomi_logo.png', width=400)
+    st.image('optomi_logo.png', width=133)  # Updated logo size to approximately one-third of original (3.2 inches / 3)
     st.title('Resume Formatter')
     st.write("Upload a resume (PDF or DOCX) to standardize formatting.")
     
@@ -340,6 +361,20 @@ def create_streamlit_interface():
                 )
             else:
                 st.error(message)
+
+def abbreviate_date(date_str):
+    """
+    Abbreviate month names to three letters in a date string.
+    Example: "January 2022 - December 2024" -> "Jan 2022 - Dec 2024"
+    """
+    months = {
+        'January': 'Jan', 'February': 'Feb', 'March': 'Mar', 'April': 'Apr',
+        'May': 'May', 'June': 'Jun', 'July': 'Jul', 'August': 'Aug',
+        'September': 'Sep', 'October': 'Oct', 'November': 'Nov', 'December': 'Dec'
+    }
+    for full, abbr in months.items():
+        date_str = date_str.replace(full, abbr)
+    return date_str
 
 if __name__ == "__main__":
     create_streamlit_interface()
